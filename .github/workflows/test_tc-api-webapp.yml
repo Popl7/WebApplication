@@ -12,15 +12,19 @@ on:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-
     steps:
-    - name: deploy.ps1
-      run: .github\scripts\build.ps1 ${{ github.run_number }}
-      shell: powershell
-
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'tallcomponents2-test-api'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Test }}
-        package: release\myapp
+      - name: restore
+        run: dotnet restore
+  
+      - name: build
+        run: dotnet build --no-restore --configuration Release
+  
+      - name: publish
+        run: dotnet publish -c Release -o release\myapp
+  
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'tallcomponents2-test-api'
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_Test }}
+          package: release\myapp
