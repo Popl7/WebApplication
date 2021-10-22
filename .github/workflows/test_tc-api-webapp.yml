@@ -1,0 +1,26 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy - test
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+    - name: deploy.ps1
+      run: .github\scripts\build.ps1 ${{ github.run_number }}
+      shell: powershell
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'tallcomponents2-test-api'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Test }}
+        package: release\myapp
